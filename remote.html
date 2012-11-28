@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        html, body {
+            background-color: #000000;
+            height: 100%;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            overflow: hidden;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /*text-align: center;*/
+        }
+
+        h1{
+            text-align: center;
+            color: white;
+        }
+
+        #container{
+            width: 906px;
+            height: 330px;
+            position: relative;
+            /*margin: 0 auto;*/
+            top: 50%;
+            left: 50%;
+            margin-top: -200px;
+            margin-left: -453px;
+        }
+
+        #container > div{
+            -webkit-transition: -webkit-transform 0.5s ease-in;
+            width: 440px;
+            height: 330px;
+            border: 5px solid white;
+            background-color: white;
+            background-image: url(http://www.twilio.com/blog/wp-content/uploads/2012/11/logo-webrtc.png);
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        #container > div > h1 {
+            position: absolute;
+            z-index: -1;
+        }
+
+        video{
+            /*-webkit-transition: opacity 3s;*/
+            -webkit-transition: all 3s;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            z-index: 4;
+        }
+
+        div.left{
+            display: inline-block;
+            -webkit-transform: perspective( 600px ) rotateY( 10deg );
+            -webkit-box-reflect: below 10px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(50%, transparent), to(rgba(255,255,255,0.2)));
+        }
+
+        div.right{
+            display: inline-block;
+            -webkit-transform: perspective( 600px ) rotateY( -10deg );
+            -webkit-box-reflect: below 10px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(50%, transparent), to(rgba(255,255,255,0.2)));
+        }
+
+        div.left > video[src^="blob"]{
+            opacity: 1;
+        }
+
+        div.right > video[src^="blob"]{
+            opacity: 1;
+        }
+
+        #container > div:hover{
+            -webkit-transform: perspective( 600px ) rotateY( 0deg );
+        }
+
+
+    </style>
+</head>
+<body>
+<!--<h1>WebRTC</h1>-->
+
+<div id="container">
+    <div class="left">
+        <video id="local" autoplay="true" src=""></video>
+    </div>
+    <div class="right">
+        <video id="remote" autoplay="true"></video>
+    </div>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+
+    // Configuration Variables
+    var pc_config = {"iceServers":[{"url":"stun:stun.l.google.com:19302"}]};
+    var mediaConstraints = {'mandatory': {'OfferToReceiveAudio':true, 'OfferToReceiveVideo':true}};
+
+
+    // Connect to WebSocket and Create Listeners
+//    var socket = io.connect('http://localhost');
+    var socket = io.connect('http://192.168.1.102/');
+
+    socket.on('connection', function(){
+        console.log('ws connected');
+    });
+
+    socket.on('msg', function(msg){
+//        console.log('ws message', msg);
+        if (msg.type === 'offer') {
+            createPeerConnection();
+
+            pc.setRemoteDescription(new RTCSessionDescription(msg));
+
+            doAnswer();
+
+        } else if (msg.type === 'answer') {
+            pc.setRemoteDescription(new RTCSessionDescription(msg));
+        } else if (msg.type === 'candidate') {
+            var candidate = new RTCIceCandidate({sdpMLineIndex:msg.label,
+                candidate:msg.candidate});
+            pc.addIceCandidate(candidate);
+        }
+    });
+
+    // Request User Media
+    navigator.webkitGetUserMedia({'audio': true, 'video': true}, getUserMediaSuccess);
+
+    function getUserMediaSuccess(stream){
+        localStream = stream;
+        local.src = webkitURL.createObjectURL(stream);
+    }
+
+
+    // Create PeerConnection
+    function createPeerConnection(){
+        console.log('Creating Peer Connection');
+
+        pc = new webkitRTCPeerConnection(pc_config);
+        pc.onicecandidate = onIceCandidate;
+
+        pc.onaddstream = function(event){
+            console.log("Remote Stream Added");
+            remote.src = webkitURL.createObjectURL(event.stream);
+        };
+
+        pc.addStream(localStream);
+    }
+
+    // Send Answer
+    function doAnswer(){
+        console.log('Sending Answer');
+
+        pc.createAnswer(function(sd){
+            pc.setLocalDescription(sd);
+            socket.emit('message', sd);
+        });
+    }
+
+    // Send Offer
+    function doCall(){
+        console.log('Calling');
+
+        pc.createOffer(function(sd){
+            pc.setLocalDescription(sd);
+            socket.emit('message', sd);
+        }, null, mediaConstraints);
+    }
+
+    // Callback for IceCandidate
+    function onIceCandidate(event) {
+        if (event.candidate) {
+            socket.emit('message', {type:'candidate',
+                label:event.candidate.sdpMLineIndex,
+                id:event.candidate.sdpMid,
+                candidate:event.candidate.candidate});
+        } else {
+            console.log("End of candidates.");
+        }
+    }
+</script>
+
+</body>
+</html>

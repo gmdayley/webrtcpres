@@ -340,7 +340,9 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
 
     // Connect to WebSocket and Create Listeners
 //    var socket = io.connect('http://localhost');
-    var socket = io.connect('http://192.168.1.102');
+//    var socket = io.connect('http://192.168.1.102');
+//    var socket = io.connect('http://webrtc.coderighteo.us');
+    var socket = io.connect('http://107.20.151.126');
 
     socket.on('connection', function(){
         console.log('ws connected');

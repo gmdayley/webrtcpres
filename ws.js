@@ -4,7 +4,7 @@ var express = require('express')
     , server = require('http').createServer(app)
     , io = require('socket.io').listen(server);
 
-server.listen(process.env.WEBRTC_APP_PORT || 3006);
+server.listen(process.env.PORT || 3006);
 
 app.use("/", express.static(__dirname));
 

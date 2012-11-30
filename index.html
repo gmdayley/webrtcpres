@@ -343,7 +343,7 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
 <script>
 
     WebRtc.initialize({
-        wsAddr: 'http://dry-cove-8913.herokuapp.com',
+        wsAddr: window.location.hostname === 'localhost' ? 'http://localhost' : 'http://webrtc.coderighteo.us',
         localVideo: 'lv',
         remoteVideo: 'rv'
     });

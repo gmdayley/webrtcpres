@@ -8,10 +8,14 @@ server.listen(process.env.PORT || 3006);
 
 app.use("/", express.static(__dirname));
 
-io.configure(function () {
-    io.set("transports", ["xhr-polling"]);
-    io.set("polling duration", 10);
-});
+
+if(process.env.PORT){
+    console.log("Falling back to xhr-polling");
+    io.configure(function () {
+        io.set("transports", ["xhr-polling"]);
+        io.set("polling duration", 10);
+    });
+}
 
 io.sockets.on('connection', function (socket) {
     socket.emit('connection', {});

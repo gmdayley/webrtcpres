@@ -28,47 +28,12 @@
     <script src="lib/js/html5shiv.js"></script>
     <![endif]-->
 
-    <style type="text/css">
-        #info{
-            position: fixed;
-            -webkit-transition: opacity .5s;
-            opacity: 0;
-            /*background: blue;*/
-            text-align: center;
-            width: 100%;
-            padding: 20px;
-            z-index: 30;
-
-            height: 100px;
-        }
-
-        #info > video{
-            width: 300px;
-            height: 225px;
-            border: 3px solid white;
-        }
-
-        #info.show{
-            opacity: 1;
-        }
-
-
-
-        #info.bigtime{
-
-        }
-    </style>
 </head>
 
 <body>
 
 <div class="reveal">
 
-
-
-<div id="info">
-    Hello
-</div>
 
 <!-- Any section element inside of this container is displayed as a slide -->
 <div class="slides">
@@ -327,9 +292,9 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
         </div>
         <div class="right">
             <video id="rv" autoplay="true"></video>
-            <span id="join"></span>
         </div>
     </div>
+    <span id="join"></span>
 </section>
 
 <section data-state="alert">
@@ -399,15 +364,15 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
 
     }, false);
 
-
+/*
     document.addEventListener('keydown', function(e){
         if(e.altKey && e.keyCode == 73){
             console.log('INFO', info);
             info.classList.toggle('show');
         }
     });
-
-    var joinUrl = window.location.origin + '/webrtc.html?caller';
+*/
+    var joinUrl = window.location.origin + '/demo.html?caller';
     var joinAnchor = document.createElement('a');
     joinAnchor.href = joinUrl;
     joinAnchor.innerText = joinUrl;

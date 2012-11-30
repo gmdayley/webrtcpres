@@ -25,6 +25,9 @@
         remoteVideo: 'rv',
         onconnection: function(){
             document.getElementById('video-container').classList.add('connected');
+        },
+        ondisconnect: function(){
+            document.getElementById('video-container').classList.remove('connected');
         }
     });
 

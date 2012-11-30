@@ -25,6 +25,11 @@ var WebRtc = (function() {
         remoteVideo = document.getElementById(config.remoteVideo);
 
         setupWS();
+
+        // Send BYE on refreshing(or leaving) a demo page to ensure the room is cleaned for next session.
+        window.onbeforeunload = function () {
+            socket.emit('message', {type:'bye'});
+        }
     }
 
     function setupWS(){
@@ -52,6 +57,9 @@ var WebRtc = (function() {
                 var candidate = new RTCIceCandidate({sdpMLineIndex:msg.label,
                     candidate:msg.candidate});
                 pc.addIceCandidate(candidate);
+            }
+            else if (msg.type === 'bye') {
+                onRemoteHangup();
             }
         });
     }
@@ -101,6 +109,23 @@ var WebRtc = (function() {
         });
     }
 
+    function onRemoteHangup(){
+        if(config.ondisconnect){
+            config.ondisconnect();
+        }
+        stop();
+    }
+
+    function hangUp(){
+        stop();
+        socket.emit('message', {type: 'bye'});
+    }
+
+    function stop(){
+        pc.close();
+        pc = null;
+    }
+
     function start(caller) {
         navigator.webkitGetUserMedia({'audio': true, 'video': true},
             function(stream){
@@ -111,7 +136,6 @@ var WebRtc = (function() {
                     createPeerConnection();
                     doCall();
                 }
-
                 started = true;
             }
         );
@@ -135,6 +159,7 @@ var WebRtc = (function() {
     return {
         initialize: initialize,
         start : start,
+        hangUp: hangUp,
         started: hasStarted
     }
 

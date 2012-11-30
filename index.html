@@ -52,6 +52,8 @@
             opacity: 1;
         }
 
+
+
         #info.bigtime{
 
         }
@@ -61,6 +63,8 @@
 <body>
 
 <div class="reveal">
+
+
 
 <div id="info">
     Hello
@@ -317,12 +321,13 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
 </section>
 
 <section data-state="blackout webrtc">
-    <div id="container">
+    <div id="video-container">
         <div class="left">
             <video id="lv" autoplay="true"></video>
         </div>
         <div class="right">
             <video id="rv" autoplay="true"></video>
+            <span id="join"></span>
         </div>
     </div>
 </section>
@@ -345,7 +350,10 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
     WebRtc.initialize({
         wsAddr: window.location.hostname === 'localhost' ? 'http://localhost' : 'http://webrtc.coderighteo.us',
         localVideo: 'lv',
-        remoteVideo: 'rv'
+        remoteVideo: 'rv',
+        onconnection: function(){
+            document.getElementById('video-container').classList.add('connected');
+        }
     });
 
 
@@ -383,11 +391,12 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
     }, false);
 
 
+
     Reveal.addEventListener('webrtc', function(){
         if(!WebRtc.started()){
-            var isCaller =  Reveal.getQueryHash().caller === 'true';
-            WebRtc.start(isCaller);
+            WebRtc.start(false);
         }
+
     }, false);
 
 
@@ -397,6 +406,13 @@ pc.setRemoteDescription(new RTCSessionDescription(msg));
             info.classList.toggle('show');
         }
     });
+
+    var joinUrl = window.location.origin + '/webrtc.html?caller';
+    var joinAnchor = document.createElement('a');
+    joinAnchor.href = joinUrl;
+    joinAnchor.innerText = joinUrl;
+    joinAnchor.target = '_blank';
+    document.getElementById('join').appendChild(joinAnchor);
 
 
 

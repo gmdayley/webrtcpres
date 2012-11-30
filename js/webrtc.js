@@ -65,6 +65,10 @@ var WebRtc = (function() {
 
         pc.onaddstream = function(event){
             remoteVideo.src = webkitURL.createObjectURL(event.stream);
+
+            if(config.onconnection){
+                config.onconnection();
+            }
         };
 
         pc.onicecandidate = onIceCandidate;
@@ -135,20 +139,6 @@ var WebRtc = (function() {
     }
 
 })();
-
-
-
-function createPeerConnection(){
-    pc = new webkitRTCPeerConnection(pc_config);
-
-    pc.addStream(localStream);
-
-    pc.onaddstream = function(event){
-        remote.src = webkitURL.createObjectURL(event.stream);
-    };
-
-    pc.onicecandidate = onIceCandidate;
-}
 
 
 

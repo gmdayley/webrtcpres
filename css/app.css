@@ -1,4 +1,17 @@
-#container{
+html, body {
+    background-color: #000000;
+    height: 100%;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /*text-align: center;*/
+}
+
+#video-container {
     width: 906px;
     height: 330px;
     position: relative;
@@ -9,8 +22,8 @@
     margin-left: -453px;
 }
 
-#container > div{
-    -webkit-transition: -webkit-transform 0.5s ease-in;
+#video-container > div{
+    -webkit-transition: -webkit-transform 1s;
     width: 400px;
     height: 300px;
     border: 5px solid white;
@@ -20,41 +33,46 @@
     background-repeat: no-repeat;
 }
 
-#container > div > h1 {
+#video-container > div > h1 {
     position: absolute;
     z-index: -1;
 }
 
-#container video{
-    /*-webkit-transition: opacity 3s;*/
-    -webkit-transition: all 3s;
+#video-container video{
+    -webkit-transition: opacity 1s;
+    /*-webkit-transition: all 1s;*/
     width: 100%;
     height: 100%;
     opacity: 0;
     z-index: 4;
 }
 
-div.left{
+#video-container div{
     display: inline-block;
-    -webkit-transform: perspective( 600px ) rotateY( 10deg );
     -webkit-box-reflect: below 10px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(50%, transparent), to(rgba(255,255,255,0.2)));
 }
 
-div.right{
-    display: inline-block;
-    -webkit-transform: perspective( 600px ) rotateY( -10deg );
-    -webkit-box-reflect: below 10px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(50%, transparent), to(rgba(255,255,255,0.2)));
+
+#video-container.connected > div.left{
+    -webkit-transform: perspective( 600px ) rotateY( 7deg );
 }
 
-#container div.left > video[src^="blob"]{
+#video-container.connected > div.right{
+    -webkit-transform: perspective( 600px ) rotateY( -7deg );
+}
+
+#video-container div.left > video[src^="blob"]{
     opacity: 1;
 }
 
-#container div.right > video[src^="blob"]{
+#video-container div.right > video[src^="blob"]{
     opacity: 1;
 }
-
-#container > div:hover{
+/*
+#video-container > div:hover{
     -webkit-transform: perspective( 600px ) rotateY( 0deg );
-}
+}*/
 
+#join a{
+    position: absolute; top: -10px; right: 10px; font-size:.3em;
+}

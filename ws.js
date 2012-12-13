@@ -11,10 +11,15 @@ app.use("/", express.static(__dirname));
 
 app.use(express.bodyParser());
 
+var _socket;
+
 app.post("/twilio", function(request, response){
     console.log(request.body);
 
-    io.sockets.broadcast.emit('twilio', request.body);
+    if(_socket){
+        _socket.emit('twilio', request.body);
+    }
+
     response.send('ok');
 });
 
@@ -27,7 +32,11 @@ if(process.env.PORT){
     });
 }
 
+
+
 io.sockets.on('connection', function (socket) {
+    _socket = socket;
+
     socket.emit('connection', {});
 
     socket.on('message', function(msg){

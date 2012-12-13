@@ -9,6 +9,16 @@ server.listen(process.env.PORT || 3006);
 app.use("/", express.static(__dirname));
 
 
+app.use(express.bodyParser());
+
+app.post("/twilio", function(request, response){
+    console.log(request.body);
+
+    io.sockets.broadcast.emit('twilio', request.body);
+    response.send('ok');
+});
+
+
 if(process.env.PORT){
     console.log("Falling back to xhr-polling");
     io.configure(function () {
